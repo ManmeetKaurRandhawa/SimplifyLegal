@@ -1,3 +1,31 @@
+const mojibakePattern = /(?:Ã.|à.|â.|ª.|€|™)/;
+
+function repairString(value) {
+  if (typeof value !== "string" || !mojibakePattern.test(value)) {
+    return value;
+  }
+
+  try {
+    const bytes = Uint8Array.from(value, (char) => char.charCodeAt(0) & 0xff);
+    const repaired = new TextDecoder("utf-8").decode(bytes);
+    return repaired.includes("�") ? value : repaired;
+  } catch (_error) {
+    return value;
+  }
+}
+
+function repairDeep(value) {
+  if (Array.isArray(value)) {
+    return value.map((entry) => repairDeep(entry));
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, repairDeep(entry)]));
+  }
+
+  return repairString(value);
+}
+
 export const demoText = `1. Payment Terms: The Client shall remit payment within 15 days of receipt of the invoice, failing which interest at the rate of 18% per annum may be levied.
 
 2. Confidentiality: Both parties shall keep confidential all proprietary or sensitive information disclosed during the term of this Agreement and for a period of three years thereafter.
@@ -78,14 +106,14 @@ export const publicDemoReport = {
   ],
 };
 
-export const languageOptionFallback = [
+export const languageOptionFallback = repairDeep([
   { code: "english", label: "English" },
   { code: "hindi", label: "हिन्दी" },
   { code: "marathi", label: "मराठी" },
   { code: "gujarati", label: "ગુજરાતી" },
-];
+]);
 
-export const uiText = {
+export const uiText = repairDeep({
   english: {
     heroTitle: "Making legal documents readable, teachable, and verifiable.",
     heroLead:
@@ -294,9 +322,9 @@ export const uiText = {
     authRequired: "લૉગિન જરૂરી છે",
     logout: "લૉગઆઉટ",
   },
-};
+});
 
-export const localTermMaps = {
+export const localTermMaps = repairDeep({
   hindi: {
     Payment: "भुगतान",
     Termination: "समाप्ति",
@@ -363,4 +391,4 @@ export const localTermMaps = {
     "Thanks for your feedback!": "તમારા પ્રતિસાદ માટે આભાર!",
     "Was this helpful?": "શું આ ઉપયોગી હતું?",
   },
-};
+});
