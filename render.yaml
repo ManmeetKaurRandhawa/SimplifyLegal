@@ -3,10 +3,12 @@ services:
     name: simplifylegal
     runtime: node
     plan: free
-    buildCommand: cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install
+    buildCommand: cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install && npm rebuild better-sqlite3 --build-from-source
     startCommand: cd backend && npm start
     healthCheckPath: /api/health
     envVars:
+      - key: NODE_VERSION
+        value: 22.11.0
       - key: JWT_SECRET
         generateValue: true
       - key: DOCUMENT_ENCRYPTION_KEY
