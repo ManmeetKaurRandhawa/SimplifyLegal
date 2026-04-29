@@ -3,15 +3,15 @@ services:
     name: simplifylegal
     runtime: node
     plan: free
-    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    buildCommand: cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install
     startCommand: cd backend && npm start
     healthCheckPath: /api/health
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: JWT_SECRET
         generateValue: true
       - key: DOCUMENT_ENCRYPTION_KEY
         generateValue: true
       - key: OPENAI_MODEL
         value: gpt-4.1-mini
+      - key: NODE_ENV
+        value: production
