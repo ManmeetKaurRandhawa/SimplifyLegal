@@ -194,7 +194,11 @@ function App() {
 
   useEffect(() => {
     loadHealth();
-    localStorage.removeItem("simplifylegal_token");
+    try {
+      window.localStorage?.removeItem("simplifylegal_token");
+    } catch (_error) {
+      // Ignore storage access issues on restricted browsers.
+    }
   }, []);
 
   useEffect(() => {
@@ -207,13 +211,30 @@ function App() {
       return undefined;
     }
 
+    const synth = window.speechSynthesis;
     const loadVoices = () => {
-      setAvailableVoices(window.speechSynthesis.getVoices());
+      try {
+        setAvailableVoices(synth.getVoices?.() || []);
+      } catch (_error) {
+        setAvailableVoices([]);
+      }
     };
 
     loadVoices();
-    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
-    return () => window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+    if (typeof synth.addEventListener === "function") {
+      synth.addEventListener("voiceschanged", loadVoices);
+      return () => {
+        if (typeof synth.removeEventListener === "function") {
+          synth.removeEventListener("voiceschanged", loadVoices);
+        }
+      };
+    }
+
+    const previousHandler = synth.onvoiceschanged;
+    synth.onvoiceschanged = loadVoices;
+    return () => {
+      synth.onvoiceschanged = previousHandler || null;
+    };
   }, []);
 
   useEffect(() => {
