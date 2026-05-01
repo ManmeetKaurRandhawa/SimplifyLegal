@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "vite",
     "build": "npx vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+      "start": "node server.js",     // for backend
+  "build": "react-scripts build" // for React frontend
   },
   "dependencies": {
     "react": "^19.2.4",
