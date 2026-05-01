@@ -378,7 +378,7 @@ function App() {
 
       setToken(data.token);
       setCurrentUser(data.user);
-      setPublicView("landing");
+      setActivePage("home");
       setActiveDocument(null);
       setTranslatedDocument(null);
       setFeedbackSubmitted({});
