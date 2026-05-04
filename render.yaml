@@ -3,7 +3,7 @@ services:
     name: simplifylegal
     runtime: node
     plan: free
-    buildCommand: cd frontend && npm ci --include=dev --include=optional && npm run build && cd ../backend && npm ci --include=optional && npm rebuild better-sqlite3 --build-from-source
+    buildCommand: cd frontend && npm ci --include=dev --include=optional && npm install @rolldown/binding-linux-x64-gnu@1.0.0-rc.17 --no-save && npm run build && cd ../backend && npm ci --include=optional && npm rebuild better-sqlite3 --build-from-source
     startCommand: cd backend && npm start
     healthCheckPath: /api/health
     envVars:
