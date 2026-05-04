@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
 import "./styles.css";
 
 function FallbackScreen({ title = "The app hit a startup problem", message }) {
@@ -93,19 +94,14 @@ window.addEventListener("unhandledrejection", (event) => {
   renderFallback("A startup promise failed", event.reason);
 });
 
-async function boot() {
-  try {
-    const { default: App } = await import("./App.jsx");
-    root.render(
-      <React.StrictMode>
-        <RootErrorBoundary>
-          <App />
-        </RootErrorBoundary>
-      </React.StrictMode>
-    );
-  } catch (error) {
-    renderFallback("The app module could not load", error);
-  }
+function boot() {
+  root.render(
+    <React.StrictMode>
+      <RootErrorBoundary>
+        <App />
+      </RootErrorBoundary>
+    </React.StrictMode>
+  );
 }
 
 boot();
