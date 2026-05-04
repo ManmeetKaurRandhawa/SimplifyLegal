@@ -787,7 +787,7 @@ const persistDocument = db.transaction((document, userId) => {
 
 async function analyzeDocument({ title, text, source, filename, userId }) {
   let clauses = splitIntoClauses(text);
-  if (openai) {
+  if (openai && String(process.env.ENABLE_AI_CLAUSE_ENHANCEMENT || "false").toLowerCase() === "true") {
     clauses = await maybeEnhanceClausesWithAI(clauses);
   }
   clauses = clauses.map((clause) => ({
