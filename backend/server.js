@@ -274,14 +274,21 @@ app.use((req, res, next) => {
   next();
 });
 app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("Origin not allowed by CORS."));
-    },
-    credentials: false,
+  cors((req, callback) => {
+    const requestHost = req.headers.host;
+
+    callback(null, {
+      origin(origin, originCallback) {
+        const requestOriginHost = origin ? new URL(origin).host : "";
+        const isSameOrigin = requestOriginHost && requestOriginHost === requestHost;
+
+        if (!origin || isSameOrigin || ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
+          return originCallback(null, true);
+        }
+        return originCallback(new Error("Origin not allowed by CORS."));
+      },
+      credentials: false,
+    });
   })
 );
 app.use(express.json({ limit: "4mb" }));
